@@ -1,5 +1,5 @@
 # /// script
-# requires-python = ">=3.13"
+# requires-python = ">=3.11"
 # dependencies = [
 #     "llm==0.16",
 #     "llm-gpt4all",
@@ -22,7 +22,6 @@ def __():
     import llm
     import markdown
     import rich
-
     return llm, markdown, mo, rich
 
 
@@ -40,47 +39,23 @@ def __(mo):
         ollama pull llama3.2
         ```
 
-        Once you have that llm by default will not know to use it. The simplest way, assuming you're not _already_ using llm is to set it as the default, instead of OpenAI:
-
-        ```
-        llm models default llama3.2
-        ```
-
-        Then you can proceed with the other steps.
-
-        _**note**:_ If you are running this in sandbox, you need to figure out how to install `llm-gpt4all`, `llm-ollama` into the sandbox virtual env, and THEN set the default, the code Marimo is running in the sandbox does not have access to the globally installed models installed with `llm install llm-ollama` and can't run `llm models default llama3.2`.
+        Once you have that, you can use the `llm` package installed when this Marimo notebook is run in sandbox mode to connect to the locally running instance of llama 3.2. This means you can now run `llm` commands against it, and crucially make Marimo  work with it.
         """
     )
     return
 
 
 @app.cell
-def __():
-    import subprocess
-
-    subprocess.run(["llm", "install", "llm-gpt4all"])
-    subprocess.run(["llm", "install", "llm-ollama"])
-    subprocess.run(["llm", "models", "default", "llama3.2"])
-
-    # globally installed models
-    subprocess.run(["llm", "models", "list"])
-    return (subprocess,)
-
-
-@app.cell
-def __():
-    return
-
-
-@app.cell
 def __(llm):
-    # list the models installed into this sandbox
-    llm.get_models_with_aliases()
+    # list the models installed into this sandbox. Uncomment this to sanity check that you have access 
+    # to the necessary model
+    # llm.get_models_with_aliases()
+
+    # set our default to a local llama model, not OpenAI
     llm.set_default_model("llama3.2")
 
+    # bring the model into the scope of the notebook, so we can refer to it in other cells
     model = llm.get_model()
-    # TODO:
-    # figure out how to install the `llm-gpt4all`, `llm-ollama` into this sandbox, and set llma as as the default model
     return (model,)
 
 
